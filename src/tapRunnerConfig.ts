@@ -3,58 +3,58 @@ import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { normalizePath, quote, validateCodeLensOptions, CodeLensOption, isNodeExecuteAbleFile } from './util';
 
-export class JestRunnerConfig {
+export class TapRunnerConfig {
   /**
-   * The command that runs jest.
-   * Defaults to: node "node_modules/.bin/jest"
+   * The command that runs tap.
+   * Defaults to: node "node_modules/.bin/tap"
    */
-  public get jestCommand(): string {
+  public get tapCommand(): string {
     // custom
-    const jestCommand: string = vscode.workspace.getConfiguration().get('jestrunner.jestCommand');
-    if (jestCommand) {
-      return jestCommand;
+    const tapCommand: string = vscode.workspace.getConfiguration().get('taprunner.tapCommand');
+    if (tapCommand) {
+      return tapCommand;
     }
 
     // default
     if (this.isYarnPnpSupportEnabled) {
-      return `yarn jest`;
+      return `yarn tap`;
     }
-    return `node ${quote(this.jestBinPath)}`;
+    return `node ${quote(this.tapBinPath)}`;
   }
 
   public get changeDirectoryToWorkspaceRoot(): boolean {
-    return vscode.workspace.getConfiguration().get('jestrunner.changeDirectoryToWorkspaceRoot');
+    return vscode.workspace.getConfiguration().get('taprunner.changeDirectoryToWorkspaceRoot');
   }
 
   public get preserveEditorFocus(): boolean {
-    return vscode.workspace.getConfiguration().get('jestrunner.preserveEditorFocus') || false;
+    return vscode.workspace.getConfiguration().get('taprunner.preserveEditorFocus') || false;
   }
 
-  public get jestBinPath(): string {
+  public get tapBinPath(): string {
     // custom
-    let jestPath: string = vscode.workspace.getConfiguration().get('jestrunner.jestPath');
-    if (jestPath) {
-      return jestPath;
+    let tapPath: string = vscode.workspace.getConfiguration().get('taprunner.tapPath');
+    if (tapPath) {
+      return tapPath;
     }
 
     // default
-    const fallbackRelativeJestBinPath = 'node_modules/jest/bin/jest.js';
-    const mayRelativeJestBin = ['node_modules/.bin/jest', 'node_modules/jest/bin/jest.js'];
+    const fallbackRelativeTapBinPath = 'node_modules/tap/bin/run.js';
+    const mayRelativeTapBin = ['node_modules/.bin/tap', 'node_modules/tap/bin/run.js'];
     const cwd = this.cwd;
 
-    jestPath = mayRelativeJestBin.find((relativeJestBin) => isNodeExecuteAbleFile(path.join(cwd, relativeJestBin)));
-    jestPath = jestPath || path.join(cwd, fallbackRelativeJestBinPath);
+    tapPath = mayRelativeTapBin.find((relativeTapBin) => isNodeExecuteAbleFile(path.join(cwd, relativeTapBin)));
+    tapPath = tapPath || path.join(cwd, fallbackRelativeTapBinPath);
 
-    return normalizePath(jestPath);
+    return normalizePath(tapPath);
   }
 
   public get projectPath(): string {
-    return vscode.workspace.getConfiguration().get('jestrunner.projectPath') || this.currentWorkspaceFolderPath;
+    return vscode.workspace.getConfiguration().get('taprunner.projectPath') || this.currentWorkspaceFolderPath;
   }
 
   public get cwd(): string {
     return (
-      vscode.workspace.getConfiguration().get('jestrunner.projectPath') ||
+      vscode.workspace.getConfiguration().get('taprunner.projectPath') ||
       this.currentPackagePath ||
       this.currentWorkspaceFolderPath
     );
@@ -63,12 +63,12 @@ export class JestRunnerConfig {
   private get currentPackagePath() {
     let currentFolderPath: string = path.dirname(vscode.window.activeTextEditor.document.fileName);
     do {
-      // Try to find where jest is installed relatively to the current opened file.
-      // Do not assume that jest is always installed at the root of the opened project, this is not the case
+      // Try to find where tap is installed relatively to the current opened file.
+      // Do not assume that tap is always installed at the root of the opened project, this is not the case
       // such as in multi-module projects.
       const pkg = path.join(currentFolderPath, 'package.json');
-      const jest = path.join(currentFolderPath, 'node_modules', 'jest');
-      if (fs.existsSync(pkg) && fs.existsSync(jest)) {
+      const tap = path.join(currentFolderPath, 'node_modules', 'tap');
+      if (fs.existsSync(pkg) && fs.existsSync(tap)) {
         return currentFolderPath;
       }
       currentFolderPath = path.join(currentFolderPath, '..');
@@ -82,9 +82,9 @@ export class JestRunnerConfig {
     return vscode.workspace.getWorkspaceFolder(editor.document.uri).uri.fsPath;
   }
 
-  public get jestConfigPath(): string {
+  public get tapConfigPath(): string {
     // custom
-    const configPath: string = vscode.workspace.getConfiguration().get('jestrunner.configPath');
+    const configPath: string = vscode.workspace.getConfiguration().get('taprunner.configPath');
     if (!configPath) {
       return this.findConfigPath();
     }
@@ -93,9 +93,9 @@ export class JestRunnerConfig {
     return normalizePath(path.join(this.currentWorkspaceFolderPath, configPath));
   }
 
-  getJestConfigPath(targetPath: string): string {
+  getTapConfigPath(targetPath: string): string {
     // custom
-    const configPath: string = vscode.workspace.getConfiguration().get('jestrunner.configPath');
+    const configPath: string = vscode.workspace.getConfiguration().get('taprunner.configPath');
     if (!configPath) {
       return this.findConfigPath(targetPath);
     }
@@ -108,7 +108,7 @@ export class JestRunnerConfig {
     let currentFolderPath: string = targetPath || path.dirname(vscode.window.activeTextEditor.document.fileName);
     let currentFolderConfigPath: string;
     do {
-      for (const configFilename of ['jest.config.js', 'jest.config.ts']) {
+      for (const configFilename of ['tap.config.js', 'tap.config.ts']) {
         currentFolderConfigPath = path.join(currentFolderPath, configFilename);
 
         if (fs.existsSync(currentFolderConfigPath)) {
@@ -121,13 +121,13 @@ export class JestRunnerConfig {
   }
 
   public get runOptions(): string[] | null {
-    const runOptions = vscode.workspace.getConfiguration().get('jestrunner.runOptions');
+    const runOptions = vscode.workspace.getConfiguration().get('taprunner.runOptions');
     if (runOptions) {
       if (Array.isArray(runOptions)) {
         return runOptions;
       } else {
         vscode.window.showWarningMessage(
-          'Please check your vscode settings. "jestrunner.runOptions" must be an Array. '
+          'Please check your vscode settings. "taprunner.runOptions" must be an Array. '
         );
       }
     }
@@ -135,7 +135,7 @@ export class JestRunnerConfig {
   }
 
   public get debugOptions(): Partial<vscode.DebugConfiguration> {
-    const debugOptions = vscode.workspace.getConfiguration().get('jestrunner.debugOptions');
+    const debugOptions = vscode.workspace.getConfiguration().get('taprunner.debugOptions');
     if (debugOptions) {
       return debugOptions;
     }
@@ -145,19 +145,19 @@ export class JestRunnerConfig {
   }
 
   public get isCodeLensDisabled(): boolean {
-    const isCodeLensDisabled: boolean = vscode.workspace.getConfiguration().get('jestrunner.disableCodeLens');
+    const isCodeLensDisabled: boolean = vscode.workspace.getConfiguration().get('taprunner.disableCodeLens');
     return isCodeLensDisabled ? isCodeLensDisabled : false;
   }
 
   public get isRunInExternalNativeTerminal(): boolean {
     const isRunInExternalNativeTerminal: boolean = vscode.workspace
       .getConfiguration()
-      .get('jestrunner.runInOutsideTerminal');
+      .get('taprunner.runInOutsideTerminal');
     return isRunInExternalNativeTerminal ? isRunInExternalNativeTerminal : false;
   }
 
   public get codeLensOptions(): CodeLensOption[] {
-    const codeLensOptions = vscode.workspace.getConfiguration().get('jestrunner.codeLens');
+    const codeLensOptions = vscode.workspace.getConfiguration().get('taprunner.codeLens');
     if (Array.isArray(codeLensOptions)) {
       return validateCodeLensOptions(codeLensOptions);
     }
@@ -165,11 +165,11 @@ export class JestRunnerConfig {
   }
 
   public get isYarnPnpSupportEnabled(): boolean {
-    const isYarnPnp: boolean = vscode.workspace.getConfiguration().get('jestrunner.enableYarnPnpSupport');
+    const isYarnPnp: boolean = vscode.workspace.getConfiguration().get('taprunner.enableYarnPnpSupport');
     return isYarnPnp ? isYarnPnp : false;
   }
   public get getYarnPnpCommand(): string {
-    const yarnPnpCommand: string = vscode.workspace.getConfiguration().get('jestrunner.yarnPnpCommand');
+    const yarnPnpCommand: string = vscode.workspace.getConfiguration().get('taprunner.yarnPnpCommand');
     return yarnPnpCommand;
   }
 }

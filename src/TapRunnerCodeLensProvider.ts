@@ -10,10 +10,10 @@ function getCodeLensForOption(range: Range, codeLensOption: CodeLensOption, full
     coverage: 'Run --coverage',
   };
   const commandMap: Record<CodeLensOption, string> = {
-    run: 'extension.runJest',
-    debug: 'extension.debugJest',
-    watch: 'extension.watchJest',
-    coverage: 'extension.runJestCoverage',
+    run: 'extension.runTap',
+    debug: 'extension.debugTap',
+    watch: 'extension.watchTap',
+    coverage: 'extension.runTapCoverage',
   };
   return new CodeLens(range, {
     arguments: [fullTestName],
@@ -51,7 +51,7 @@ function getTestsBlocks(
   return codeLens;
 }
 
-export class JestRunnerCodeLensProvider implements CodeLensProvider {
+export class TapRunnerCodeLensProvider implements CodeLensProvider {
   constructor(private readonly codeLensOptions: CodeLensOption[]) {}
 
   public async provideCodeLenses(document: TextDocument): Promise<CodeLens[]> {
@@ -65,7 +65,7 @@ export class JestRunnerCodeLensProvider implements CodeLensProvider {
       return codeLens;
     } catch (e) {
       // Ignore error and keep showing Run/Debug buttons at same position
-      console.error('jest-editor-support parser returned error', e);
+      console.error('tap-editor-support parser returned error', e);
     }
   }
 }
