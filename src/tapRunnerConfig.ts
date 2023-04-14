@@ -19,7 +19,7 @@ export class TapRunnerConfig {
     if (this.isYarnPnpSupportEnabled) {
       return `yarn tap`;
     }
-    return `node ${quote(this.tapBinPath)}`;
+    return `npx tap`;
   }
 
   public get changeDirectoryToWorkspaceRoot(): boolean {

@@ -179,7 +179,6 @@ export class TapRunner {
 
     const standardArgs = this.buildTapArgs(filePath, currentTestName, false);
     pushMany(config.args, standardArgs);
-    config.args.push('--runInBand');
 
     return config;
   }
