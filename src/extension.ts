@@ -1,85 +1,85 @@
 'use strict';
 import * as vscode from 'vscode';
 
-import { JestRunner } from './jestRunner';
-import { JestRunnerCodeLensProvider } from './JestRunnerCodeLensProvider';
-import { JestRunnerConfig } from './jestRunnerConfig';
+import { TapRunner } from './tapRunner';
+import { TapRunnerCodeLensProvider } from './TapRunnerCodeLensProvider';
+import { TapRunnerConfig } from './tapRunnerConfig';
 
 export function activate(context: vscode.ExtensionContext): void {
-  const config = new JestRunnerConfig();
-  const jestRunner = new JestRunner(config);
-  const codeLensProvider = new JestRunnerCodeLensProvider(config.codeLensOptions);
+  const config = new TapRunnerConfig();
+  const tapRunner = new TapRunner(config);
+  const codeLensProvider = new TapRunnerCodeLensProvider(config.codeLensOptions);
 
-  const runJest = vscode.commands.registerCommand(
-    'extension.runJest',
+  const runTap = vscode.commands.registerCommand(
+    'extension.runTap',
     async (argument: Record<string, unknown> | string) => {
-      return jestRunner.runCurrentTest(argument);
+      return tapRunner.runCurrentTest(argument);
     }
   );
 
-  const runJestCoverage = vscode.commands.registerCommand(
-    'extension.runJestCoverage',
+  const runTapCoverage = vscode.commands.registerCommand(
+    'extension.runTapCoverage',
     async (argument: Record<string, unknown> | string) => {
-      return jestRunner.runCurrentTest(argument, ['--coverage']);
+      return tapRunner.runCurrentTest(argument, ['--coverage']);
     }
   );
 
-  const runJestPath = vscode.commands.registerCommand('extension.runJestPath', async (argument: vscode.Uri) =>
-    jestRunner.runTestsOnPath(argument.path)
+  const runTapPath = vscode.commands.registerCommand('extension.runTapPath', async (argument: vscode.Uri) =>
+    tapRunner.runTestsOnPath(argument.path)
   );
-  const runJestAndUpdateSnapshots = vscode.commands.registerCommand('extension.runJestAndUpdateSnapshots', async () => {
-    jestRunner.runCurrentTest('', ['-u']);
+  const runTapAndUpdateSnapshots = vscode.commands.registerCommand('extension.runTapAndUpdateSnapshots', async () => {
+    tapRunner.runCurrentTest('', ['-u']);
   });
-  const runJestFile = vscode.commands.registerCommand('extension.runJestFile', async () => jestRunner.runCurrentFile());
-  const debugJest = vscode.commands.registerCommand(
-    'extension.debugJest',
+  const runTapFile = vscode.commands.registerCommand('extension.runTapFile', async () => tapRunner.runCurrentFile());
+  const debugTap = vscode.commands.registerCommand(
+    'extension.debugTap',
     async (argument: Record<string, unknown> | string) => {
       if (typeof argument === 'string') {
-        return jestRunner.debugCurrentTest(argument);
+        return tapRunner.debugCurrentTest(argument);
       } else {
-        return jestRunner.debugCurrentTest();
+        return tapRunner.debugCurrentTest();
       }
     }
   );
-  const debugJestPath = vscode.commands.registerCommand('extension.debugJestPath', async (argument: vscode.Uri) =>
-    jestRunner.debugTestsOnPath(argument.path)
+  const debugTapPath = vscode.commands.registerCommand('extension.debugTapPath', async (argument: vscode.Uri) =>
+    tapRunner.debugTestsOnPath(argument.path)
   );
-  const runPrev = vscode.commands.registerCommand('extension.runPrevJest', async () => jestRunner.runPreviousTest());
-  const runJestFileWithCoverage = vscode.commands.registerCommand('extension.runJestFileWithCoverage', async () =>
-    jestRunner.runCurrentFile(['--coverage'])
-  );
-
-  const runJestFileWithWatchMode = vscode.commands.registerCommand('extension.runJestFileWithWatchMode', async () =>
-    jestRunner.runCurrentFile(['--watch'])
+  const runPrev = vscode.commands.registerCommand('extension.runPrevTap', async () => tapRunner.runPreviousTest());
+  const runTapFileWithCoverage = vscode.commands.registerCommand('extension.runTapFileWithCoverage', async () =>
+    tapRunner.runCurrentFile(['--coverage'])
   );
 
-  const watchJest = vscode.commands.registerCommand(
-    'extension.watchJest',
+  const runTapFileWithWatchMode = vscode.commands.registerCommand('extension.runTapFileWithWatchMode', async () =>
+    tapRunner.runCurrentFile(['--watch'])
+  );
+
+  const watchTap = vscode.commands.registerCommand(
+    'extension.watchTap',
     async (argument: Record<string, unknown> | string) => {
-      return jestRunner.runCurrentTest(argument, ['--watch']);
+      return tapRunner.runCurrentTest(argument, ['--watch']);
     }
   );
 
   if (!config.isCodeLensDisabled) {
     const docSelectors: vscode.DocumentFilter[] = [
       {
-        pattern: vscode.workspace.getConfiguration().get('jestrunner.codeLensSelector'),
+        pattern: vscode.workspace.getConfiguration().get('taprunner.codeLensSelector'),
       },
     ];
     const codeLensProviderDisposable = vscode.languages.registerCodeLensProvider(docSelectors, codeLensProvider);
     context.subscriptions.push(codeLensProviderDisposable);
   }
-  context.subscriptions.push(runJest);
-  context.subscriptions.push(runJestCoverage);
-  context.subscriptions.push(runJestAndUpdateSnapshots);
-  context.subscriptions.push(runJestFile);
-  context.subscriptions.push(runJestPath);
-  context.subscriptions.push(debugJest);
-  context.subscriptions.push(debugJestPath);
+  context.subscriptions.push(runTap);
+  context.subscriptions.push(runTapCoverage);
+  context.subscriptions.push(runTapAndUpdateSnapshots);
+  context.subscriptions.push(runTapFile);
+  context.subscriptions.push(runTapPath);
+  context.subscriptions.push(debugTap);
+  context.subscriptions.push(debugTapPath);
   context.subscriptions.push(runPrev);
-  context.subscriptions.push(runJestFileWithCoverage);
-  context.subscriptions.push(runJestFileWithWatchMode);
-  context.subscriptions.push(watchJest);
+  context.subscriptions.push(runTapFileWithCoverage);
+  context.subscriptions.push(runTapFileWithWatchMode);
+  context.subscriptions.push(watchTap);
 }
 
 export function deactivate(): void {

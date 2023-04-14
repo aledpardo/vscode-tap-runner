@@ -7,6 +7,6 @@ describe('validateCodeLensOptions', () =>
       ['run', 'watch', 'debug'],
     ],
     [[], []],
-  ])('should turn "jestrunner.codeLens" options  into something valid', (input, expected) => {
+  ])('should turn "taprunner.codeLens" options  into something valid', (input, expected) => {
     expect(validateCodeLensOptions(input)).toEqual(expected);
   }));

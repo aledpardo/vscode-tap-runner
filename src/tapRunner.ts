@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { JestRunnerConfig } from './jestRunnerConfig';
+import { TapRunnerConfig } from './tapRunnerConfig';
 import { parse } from './parser';
 import {
   escapeRegExp,
@@ -18,7 +18,7 @@ interface DebugCommand {
   config: vscode.DebugConfiguration;
 }
 
-export class JestRunner {
+export class TapRunner {
   private previousCommand: string | DebugCommand;
 
   private terminal: vscode.Terminal;
@@ -29,7 +29,7 @@ export class JestRunner {
   private openNativeTerminal: boolean;
   private commands: string[] = [];
 
-  constructor(private readonly config: JestRunnerConfig) {
+  constructor(private readonly config: TapRunnerConfig) {
     this.setup();
     this.openNativeTerminal = config.isRunInExternalNativeTerminal;
   }
@@ -39,7 +39,7 @@ export class JestRunner {
   //
 
   public async runTestsOnPath(path: string): Promise<void> {
-    const command = this.buildJestCommand(path);
+    const command = this.buildTapCommand(path);
 
     this.previousCommand = command;
 
@@ -60,7 +60,7 @@ export class JestRunner {
 
     const filePath = editor.document.fileName;
     const testName = currentTestName || this.findCurrentTestName(editor);
-    const command = this.buildJestCommand(filePath, testName, options);
+    const command = this.buildTapCommand(filePath, testName, options);
 
     this.previousCommand = command;
 
@@ -79,7 +79,7 @@ export class JestRunner {
     await editor.document.save();
 
     const filePath = editor.document.fileName;
-    const command = this.buildJestCommand(filePath, undefined, options);
+    const command = this.buildTapCommand(filePath, undefined, options);
 
     this.previousCommand = command;
 
@@ -162,8 +162,8 @@ export class JestRunner {
     const config: vscode.DebugConfiguration = {
       console: 'integratedTerminal',
       internalConsoleOptions: 'neverOpen',
-      name: 'Debug Jest Tests',
-      program: this.config.jestBinPath,
+      name: 'Debug Tap Tests',
+      program: this.config.tapBinPath,
       request: 'launch',
       type: 'node',
       cwd: this.config.cwd,
@@ -173,13 +173,12 @@ export class JestRunner {
     config.args = config.args ? config.args.slice() : [];
 
     if (this.config.isYarnPnpSupportEnabled) {
-      config.args = ['jest'];
+      config.args = ['tap'];
       config.program = `.yarn/releases/${this.config.getYarnPnpCommand}`;
     }
 
-    const standardArgs = this.buildJestArgs(filePath, currentTestName, false);
+    const standardArgs = this.buildTapArgs(filePath, currentTestName, false);
     pushMany(config.args, standardArgs);
-    config.args.push('--runInBand');
 
     return config;
   }
@@ -199,21 +198,21 @@ export class JestRunner {
     return fullTestName ? escapeRegExp(fullTestName) : undefined;
   }
 
-  private buildJestCommand(filePath: string, testName?: string, options?: string[]): string {
-    const args = this.buildJestArgs(filePath, testName, true, options);
-    return `${this.config.jestCommand} ${args.join(' ')}`;
+  private buildTapCommand(filePath: string, testName?: string, options?: string[]): string {
+    const args = this.buildTapArgs(filePath, testName, true, options);
+    return `${this.config.tapCommand} ${args.join(' ')}`;
   }
 
-  private buildJestArgs(filePath: string, testName: string, withQuotes: boolean, options: string[] = []): string[] {
+  private buildTapArgs(filePath: string, testName: string, withQuotes: boolean, options: string[] = []): string[] {
     const args: string[] = [];
     const quoter = withQuotes ? quote : (str) => str;
 
     args.push(quoter(escapeRegExpForPath(normalizePath(filePath))));
 
-    const jestConfigPath = this.config.getJestConfigPath(filePath);
-    if (jestConfigPath) {
+    const tapConfigPath = this.config.getTapConfigPath(filePath);
+    if (tapConfigPath) {
       args.push('-c');
-      args.push(quoter(normalizePath(jestConfigPath)));
+      args.push(quoter(normalizePath(tapConfigPath)));
     }
 
     if (testName) {
@@ -240,7 +239,7 @@ export class JestRunner {
   }
 
   private buildNativeTerminalCommand(toRun: string): string {
-    const command = `ttab -t 'jest-runner' "${toRun}"`;
+    const command = `ttab -t 'tap-runner' "${toRun}"`;
     return command;
   }
 
@@ -255,7 +254,7 @@ export class JestRunner {
     this.commands = [];
 
     if (!this.terminal) {
-      this.terminal = vscode.window.createTerminal('jest');
+      this.terminal = vscode.window.createTerminal('tap');
     }
 
     this.terminal.show(this.config.preserveEditorFocus);
@@ -270,7 +269,7 @@ export class JestRunner {
     }
 
     if (!this.terminal) {
-      this.terminal = vscode.window.createTerminal('jest');
+      this.terminal = vscode.window.createTerminal('tap');
     }
     this.terminal.show(this.config.preserveEditorFocus);
     await vscode.commands.executeCommand('workbench.action.terminal.clear');

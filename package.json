@@ -1,13 +1,13 @@
 {
-  "name": "vscode-jest-runner",
-  "displayName": "Jest Runner",
-  "description": "Simple way to run or debug a single (or multiple) tests from context-menu",
-  "version": "0.4.60",
-  "publisher": "firsttris",
-  "author": "Tristan Teufel",
+  "name": "vscode-tap-runner",
+  "displayName": "Tap Runner",
+  "description": "Simple way to run or debug a single (or multiple) TAP tests from context-menu",
+  "version": "0.0.1",
+  "publisher": "aledpardo",
+  "author": "Alexandre Pardo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/firsttris/vscode-jest-runner.git"
+    "url": "https://github.com/aledpardo/vscode-tap-runner.git"
   },
   "license": "MIT",
   "icon": "public/icon.png",
@@ -24,61 +24,61 @@
   "contributes": {
     "configuration": [
       {
-        "title": "Jest-Runner Config",
+        "title": "Tap-Runner Config",
         "properties": {
-          "jestrunner.configPath": {
+          "taprunner.configPath": {
             "type": "string",
             "default": "",
-            "description": "Jest config path (relative to ${workFolder} e.g. jest-config.json)",
+            "description": "Tap config path (relative to ${workFolder} e.g. tap-config.json)",
             "scope": "window"
           },
-          "jestrunner.jestPath": {
+          "taprunner.tapPath": {
             "type": "string",
             "default": "",
-            "description": "Absolute path to jest bin file (e.g. /usr/lib/node_modules/jest/bin/jest.js)",
+            "description": "Absolute path to tap bin file (e.g. /usr/lib/node_modules/tap/bin/run.js)",
             "scope": "window"
           },
-          "jestrunner.projectPath": {
+          "taprunner.projectPath": {
             "type": "string",
             "default": "",
             "description": "Absolute path to project directory (e.g. /home/me/project/sub-folder)",
             "scope": "window"
           },
-          "jestrunner.debugOptions": {
+          "taprunner.debugOptions": {
             "type": "object",
             "default": {},
             "description": "Add or overwrite vscode debug configurations (only in debug mode) (e.g. { \"args\": [\"--no-cache\"] })",
             "scope": "window"
           },
-          "jestrunner.runOptions": {
+          "taprunner.runOptions": {
             "type": "array",
             "default": [],
             "items": {
               "type": "string",
               "description": "CLI Option e.g. --coverage"
             },
-            "description": "Add CLI Options to the Jest Command e.g. https://jestjs.io/docs/en/cli",
+            "description": "Add CLI Options to the Tap Command e.g. https://node-tap.org/docs/configuring/",
             "scope": "window"
           },
-          "jestrunner.jestCommand": {
+          "taprunner.tapCommand": {
             "type": "string",
             "default": "",
-            "description": "Define an alternative Jest command (e.g. for Create React App and similar abstractions)",
+            "description": "Define an alternative Tap command (e.g. for Create React App and similar abstractions)",
             "scope": "window"
           },
-          "jestrunner.disableCodeLens": {
+          "taprunner.disableCodeLens": {
             "type": "boolean",
             "default": false,
             "description": "Disable CodeLens feature",
             "scope": "window"
           },
-          "jestrunner.runInExternalNativeTerminal": {
+          "taprunner.runInExternalNativeTerminal": {
             "type": "boolean",
             "default": false,
-            "description": "Run jest runner in external native terminal. Disabled on debug mode",
+            "description": "Run tap runner in external native terminal. Disabled on debug mode",
             "scope": "window"
           },
-          "jestrunner.codeLens": {
+          "taprunner.codeLens": {
             "type": "array",
             "default": [
               "run",
@@ -91,30 +91,30 @@
             },
             "scope": "window"
           },
-          "jestrunner.codeLensSelector": {
+          "taprunner.codeLensSelector": {
             "type": "string",
             "default": "**/*.{test,spec}.{js,jsx,ts,tsx}",
             "description": "CodeLens will be shown on files matching this pattern"
           },
-          "jestrunner.enableYarnPnpSupport": {
+          "taprunner.enableYarnPnpSupport": {
             "type": "boolean",
             "default": false,
             "description": "Enable if you are using Yarn 2 with Plug'n'Play",
             "scope": "window"
           },
-          "jestrunner.changeDirectoryToWorkspaceRoot": {
+          "taprunner.changeDirectoryToWorkspaceRoot": {
             "type": "boolean",
             "default": true,
             "description": "Changes directory to workspace root before executing the test",
             "scope": "window"
           },
-          "jestrunner.preserveEditorFocus": {
+          "taprunner.preserveEditorFocus": {
             "type": "boolean",
             "default": false,
             "description": "Preserve focus on editor when running tests",
             "scope": "window"
           },
-          "jestrunner.yarnPnpCommand": {
+          "taprunner.yarnPnpCommand": {
             "type": "string",
             "default": "yarn-*.*js",
             "description": "Command for debugging with Plug'n'Play",
@@ -125,71 +125,71 @@
     ],
     "commands": [
       {
-        "command": "extension.runJest",
-        "title": "Run Jest"
+        "command": "extension.runTap",
+        "title": "Run Tap"
       },
       {
-        "command": "extension.runJestPath",
-        "title": "Run Jest on Path"
+        "command": "extension.runTapPath",
+        "title": "Run Tap on Path"
       },
       {
-        "command": "extension.runJestCoverage",
-        "title": "Run Jest and generate Coverage"
+        "command": "extension.runTapCoverage",
+        "title": "Run Tap and generate Coverage"
       },
       {
-        "command": "extension.runJestAndUpdateSnapshots",
-        "title": "Run Jest and update Snapshots"
+        "command": "extension.runTapAndUpdateSnapshots",
+        "title": "Run Tap and update Snapshots"
       },
       {
-        "command": "extension.runPrevJest",
-        "title": "Run Jest - Run Previous Test"
+        "command": "extension.runPrevTap",
+        "title": "Run Tap - Run Previous Test"
       },
       {
-        "command": "extension.runJestFile",
-        "title": "Run Jest on File"
+        "command": "extension.runTapFile",
+        "title": "Run Tap on File"
       },
       {
-        "command": "extension.debugJest",
-        "title": "Debug Jest"
+        "command": "extension.debugTap",
+        "title": "Debug Tap"
       },
       {
-        "command": "extension.debugJestPath",
-        "title": "Debug Jest on Path"
+        "command": "extension.debugTapPath",
+        "title": "Debug Tap on Path"
       },
       {
-        "command": "extension.runJestFileWithCoverage",
-        "title": "Run Jest File and generate Coverage"
+        "command": "extension.runTapFileWithCoverage",
+        "title": "Run Tap File and generate Coverage"
       },
       {
-        "command": "extension.runJestFileWithWatchMode",
-        "title": "Run Jest File in Watch Mode"
+        "command": "extension.runTapFileWithWatchMode",
+        "title": "Run Tap File in Watch Mode"
       },
       {
-        "command": "extension.watchJest",
-        "title": "Run Jest --watch"
+        "command": "extension.watchTap",
+        "title": "Run Tap --watch"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "command": "extension.runJest",
-          "group": "02_jest"
+          "command": "extension.runTap",
+          "group": "02_tap"
         },
         {
-          "command": "extension.debugJest",
-          "group": "02_jest"
+          "command": "extension.debugTap",
+          "group": "02_tap"
         }
       ],
       "explorer/context": [
         {
-          "command": "extension.runJestPath",
+          "command": "extension.runTapPath",
           "when": "explorerResourceIsFolder || resourceFilename =~ /.*\\.(spec|test)\\.(js|jsx|ts|tsx)$/",
-          "group": "02_jest@1"
+          "group": "02_tap@1"
         },
         {
-          "command": "extension.debugJestPath",
+          "command": "extension.debugTapPath",
           "when": "explorerResourceIsFolder || resourceFilename =~ /.*\\.(spec|test)\\.(js|jsx|ts|tsx)$/",
-          "group": "02_jest@2"
+          "group": "02_tap@2"
         }
       ]
     }
@@ -199,6 +199,7 @@
     "build": "webpack --mode development",
     "watch": "webpack --mode development --watch",
     "test": "jest .src/test",
+    "vsce:package": "vsce package",
     "vsce:publish": "vsce publish patch -m '%s [skip ci]' && git push",
     "ovsx:publish": "ovsx publish",
     "publish": "npm run vsce:publish && npm run ovsx:publish",
