@@ -1,13 +1,13 @@
 {
-  "name": "vscode-jest-runner",
-  "displayName": "Jest Runner",
-  "description": "Simple way to run or debug a single (or multiple) tests from context-menu",
-  "version": "0.4.60",
-  "publisher": "firsttris",
-  "author": "Tristan Teufel",
+  "name": "vscode-tap-runner",
+  "displayName": "Tap Runner",
+  "description": "Simple way to run or debug a single (or multiple) TAP tests from context-menu",
+  "version": "0.0.1",
+  "publisher": "aledpardo",
+  "author": "Alexandre Pardo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/firsttris/vscode-jest-runner.git"
+    "url": "https://github.com/aledpardo/vscode-tap-runner.git"
   },
   "license": "MIT",
   "icon": "public/icon.png",
